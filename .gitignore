@@ -1,0 +1,12 @@
+.DS_Store
+.build/
+.swiftpm/
+.venv/
+build/
+dist/
+DerivedData/
+xcuserdata/
+*.app
+*.dSYM
+*.xcarchive
+*.log
