@@ -18,8 +18,7 @@ private enum WhaleAssetStore {
         guard !missingStates.contains(state) else { return nil }
 
         let candidates: [URL?] = [
-            Bundle.module.url(forResource: state.assetName, withExtension: "png", subdirectory: "Whale"),
-            Bundle.module.url(forResource: state.assetName, withExtension: "png"),
+            packagedResourceURL(for: state),
             Bundle.main.url(forResource: state.assetName, withExtension: "png", subdirectory: "Whale"),
             Bundle.main.url(forResource: state.assetName, withExtension: "png"),
             URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
@@ -34,6 +33,29 @@ private enum WhaleAssetStore {
             }
         }
         missingStates.insert(state)
+        return nil
+    }
+
+    private static func packagedResourceURL(for state: WhalePetState) -> URL? {
+        let bundleURLs = [
+            Bundle.main.bundleURL.appendingPathComponent("CodexTaskPet_AgentPet.bundle"),
+            Bundle.main.resourceURL?.appendingPathComponent("CodexTaskPet_AgentPet.bundle"),
+            Bundle.main.executableURL?
+                .deletingLastPathComponent()
+                .appendingPathComponent("CodexTaskPet_AgentPet.bundle")
+        ].compactMap { $0 }
+
+        for bundleURL in bundleURLs {
+            guard let resourceBundle = Bundle(url: bundleURL) else { continue }
+            if let url = resourceBundle.url(
+                forResource: state.assetName,
+                withExtension: "png",
+                subdirectory: "Whale"
+            ) ?? resourceBundle.url(forResource: state.assetName, withExtension: "png") {
+                return url
+            }
+        }
+
         return nil
     }
 

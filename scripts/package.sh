@@ -4,8 +4,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONFIGURATION="${CONFIGURATION:-release}"
 APP_NAME="${APP_NAME:-Codex 任务宠物}"
-VERSION="${VERSION:-1.1.3}"
-BUILD_NUMBER="${BUILD_NUMBER:-6}"
+VERSION="${VERSION:-1.1.4}"
+BUILD_NUMBER="${BUILD_NUMBER:-7}"
 OUTPUT_DIR="${OUTPUT_DIR:-$ROOT_DIR/dist}"
 APP_PATH="$OUTPUT_DIR/$APP_NAME.app"
 
