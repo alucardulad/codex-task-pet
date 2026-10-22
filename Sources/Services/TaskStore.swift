@@ -37,8 +37,9 @@ final class TaskStore: ObservableObject {
     private let soundDefaultsKey = "AgentPet.soundEnabled"
     private let scaleDefaultsKey = "AgentPet.petScale"
 
-    static let minimumPetScale: CGFloat = 0.75
-    static let maximumPetScale: CGFloat = 1.5
+    static let minimumPetScale: CGFloat = 0.1
+    static let maximumPetScale: CGFloat = 1.0
+    static let petScaleStep: CGFloat = 0.1
 
     init(demoMode: Bool = false) {
         self.demoMode = demoMode

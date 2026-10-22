@@ -125,26 +125,19 @@ struct PetInteractionView: NSViewRepresentable {
             )
 
             menu.addItem(.separator())
-            let currentPercent = Int(store.petScale * 100)
-            addDisabledItem(to: menu, title: "鲸鱼娘大小（当前 \(currentPercent)%）")
+            let currentPercent = Int((store.petScale * 100).rounded())
+            let sizeItem = NSMenuItem(
+                title: "鲸鱼娘大小（当前 \(currentPercent)%）",
+                action: nil,
+                keyEquivalent: ""
+            )
+            sizeItem.submenu = makeSizeMenu()
+            menu.addItem(sizeItem)
 
-            let presets: [(String, CGFloat)] = [
-                ("小 · 75%", 0.75),
-                ("标准 · 100%", 1.0),
-                ("大 · 125%", 1.25),
-                ("特大 · 150%", 1.5)
-            ]
-            for (title, scale) in presets {
-                let item = addItem(
-                    to: menu,
-                    title: title,
-                    action: #selector(selectScale(_:))
-                )
-                item.representedObject = NSNumber(value: Double(scale))
-                item.state = abs(store.petScale - scale) < 0.01 ? .on : .off
-            }
-            addItem(to: menu, title: "缩小一点", action: #selector(scaleDown))
-            addItem(to: menu, title: "放大一点", action: #selector(scaleUp))
+            let scaleDownItem = addItem(to: menu, title: "缩小 10%", action: #selector(scaleDown))
+            scaleDownItem.isEnabled = store.petScale > TaskStore.minimumPetScale + 0.001
+            let scaleUpItem = addItem(to: menu, title: "放大 10%", action: #selector(scaleUp))
+            scaleUpItem.isEnabled = store.petScale < TaskStore.maximumPetScale - 0.001
 
             menu.addItem(.separator())
             addItem(
@@ -162,6 +155,26 @@ struct PetInteractionView: NSViewRepresentable {
             addItem(to: menu, title: "移动回屏幕右下角", action: #selector(resetPosition))
             addItem(to: menu, title: "退出任务宠物", action: #selector(quitApp))
             return menu
+        }
+
+        private func makeSizeMenu() -> NSMenu {
+            let sizeMenu = NSMenu(title: "大小")
+            sizeMenu.autoenablesItems = false
+
+            for percent in stride(from: 100, through: 10, by: -10) {
+                let scale = CGFloat(percent) / 100
+                let item = NSMenuItem(
+                    title: "\(percent)%",
+                    action: #selector(selectScale(_:)),
+                    keyEquivalent: ""
+                )
+                item.target = self
+                item.representedObject = NSNumber(value: Double(scale))
+                item.state = abs(store.petScale - scale) < 0.01 ? .on : .off
+                sizeMenu.addItem(item)
+            }
+
+            return sizeMenu
         }
 
         @discardableResult
@@ -200,11 +213,11 @@ struct PetInteractionView: NSViewRepresentable {
         }
 
         @objc private func scaleDown() {
-            store.adjustPetScale(by: -0.1)
+            store.adjustPetScale(by: -TaskStore.petScaleStep)
         }
 
         @objc private func scaleUp() {
-            store.adjustPetScale(by: 0.1)
+            store.adjustPetScale(by: TaskStore.petScaleStep)
         }
 
         @objc private func toggleSound() {
